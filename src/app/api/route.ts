@@ -7,27 +7,27 @@ import {
   createVirtualNetwork,
   deleteResource,
   getAzureClients,
-  getNameSuffix,
   getSubscriptionId,
   listVirtualMachines,
-} from "@/app/lib/utils/azureTs";
+} from "@/lib/utils/azureTs";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
     const subscriptionId: string = getSubscriptionId();
 
-    const projectName = "azure-samples-create-vm";
-
-    const nameSuffix = getNameSuffix();
-    const resourceGroupName = "ressourceGroup" + nameSuffix;
-    const storageAccountName = "storage" + nameSuffix;
-    const location = "eastus";
-    const accType = "Standard_LRS";
-    const virtualMachineName = "vm" + nameSuffix;
-    const virtualNetworkName = "network" + nameSuffix;
-    const publicIpName = "ip" + nameSuffix;
-    const networkInterfaceName = "nic" + nameSuffix;
+    const {
+      projectName,
+      nameSuffix,
+      resourceGroupName,
+      storageAccountName,
+      location,
+      accType,
+      virtualMachineName,
+      virtualNetworkName,
+      publicIpName,
+      networkInterfaceName,
+    } = await req.json();
 
     const { computeClient, networkClient, resourceClient, storageClient } = await getAzureClients(subscriptionId);
 

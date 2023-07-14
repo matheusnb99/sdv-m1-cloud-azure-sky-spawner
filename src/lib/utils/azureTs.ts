@@ -117,6 +117,17 @@ export async function createVirtualNetwork(
   return virtualNetwork;
 }
 
+export async function getVirtualNetwork(
+  networkClient: NetworkManagementClient,
+  resourceGroupName: string,
+  virtualNetworkName: string
+) {
+  const virtualNetwork = await networkClient.virtualNetworks.get(resourceGroupName, virtualNetworkName);
+  console.log(`Virtual network "${virtualNetwork.name}" was found successfully`);
+
+  return virtualNetwork;
+}
+
 export async function createPublicIpAddress(
   networkClient: NetworkManagementClient,
   location: string,
@@ -161,6 +172,15 @@ export async function createNetworkInterface(
   console.log(
     `Creating "${name}" network interface in ${resourceGroupName} resource group in ${networkClient.subscriptionId} subscription`
   );
+  if (!publicIp) {
+    console.error("Public IP is not defined");
+    return null;
+  }
+
+  if (!virtualNetwork) {
+    console.error("Subnet is not defined");
+    return null;
+  }
   await networkClient.networkInterfaces.beginCreateOrUpdateAndWait(resourceGroupName, name, parameters);
   const networkInterface = await networkClient.networkInterfaces.get(resourceGroupName, name);
   console.log(`Virtual network "${networkInterface.name}" was created successfully`);

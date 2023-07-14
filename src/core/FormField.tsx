@@ -3,12 +3,13 @@ import React from "react";
 import Input from "./Input";
 
 type Props = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   htmlfor: string;
   as?: React.ElementType;
   name: string;
-  read: boolean;
+  label?: string;
+  read?: boolean;
   otherprops?: any;
 };
 
@@ -30,24 +31,37 @@ interface FieldProps {
 }
 
 const FormField: React.FC<Props> = (props) => {
-  const { children, className, htmlfor, as: Component = Input, read = "false", ...otherProps } = props;
+  const {
+    children,
+    className,
+    htmlfor,
+    label,
+    as: Component = Input,
+    read = "false",
+    ...otherProps
+  } = props;
 
   return (
     <Field {...otherProps}>
       {({ field, meta: { touched, error } }: FieldProps) => (
         <div className={className}>
-          <label data-htmlfor={htmlfor} className="block flex items-center justify-between">
+          <label
+            data-htmlfor={htmlfor}
+            className="block flex items-center justify-between"
+          >
             {children}
             <Component
               className={`${
                 read ? "bg-gray-500 text-gray-300" : ""
               } border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  bg-gray-600 border-gray-500 placeholder-gray-400 text-white`}
-              read={read}
+              read={read.toString()}
               {...field}
               {...otherProps}
             />
           </label>
-          {touched && error ? <p className="block text-red-500 p-2 text-sm ml-100">{error}</p> : null}
+          {touched && error ? (
+            <p className="block text-red-500 p-2 text-sm ml-100">{error}</p>
+          ) : null}
         </div>
       )}
     </Field>

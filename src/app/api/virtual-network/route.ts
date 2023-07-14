@@ -1,12 +1,13 @@
-import { createPublicIpAddress, getSubscriptionId } from "@/lib/utils/azureTs";
+import { createVirtualNetwork, getSubscriptionId } from "@/lib/utils/azureTs";
 import { generateTokenCallback } from "@/lib/utils/generateToken";
 import { NetworkManagementClient } from "@azure/arm-network";
 import { headers } from "next/dist/client/components/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  console.log("Generating public IP");
-  const { resourceGroupName, location, publicIpName } = await req.json();
+  console.log("Generating virtual network");
+
+  const { resourceGroupName, location, virtualNetworkName } = await req.json();
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");
@@ -19,18 +20,18 @@ export async function POST(req: Request) {
 
   const networkClient = new NetworkManagementClient(generateTokenCallback(token), subscriptionId);
 
-  const publicIp = await createPublicIpAddress(networkClient, location, resourceGroupName, publicIpName);
+  const virtualNetwork = await createVirtualNetwork(networkClient, location, resourceGroupName, virtualNetworkName);
 
-  return NextResponse.json({ publicIp });
+  return NextResponse.json({ virtualNetwork });
 }
 
 export async function GET(req: Request) {
-  console.log("Fetching public IP");
+  console.log("Fetching virtual network");
 
   const { searchParams } = new URL(req.url);
 
   const resourceGroupName = searchParams.get("resourceGroupName");
-  const publicIpName = searchParams.get("publicIpName");
+  const virtualNetworkName = searchParams.get("virtualNetworkName");
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");
@@ -41,15 +42,15 @@ export async function GET(req: Request) {
   if (!resourceGroupName) {
     return NextResponse.json({ error: "No resourceGroupName provided" }, { status: 400 });
   }
-  if (!publicIpName) {
-    return NextResponse.json({ error: "No publicIpName provided" }, { status: 400 });
+  if (!virtualNetworkName) {
+    return NextResponse.json({ error: "No virtualNetworkName provided" }, { status: 400 });
   }
 
   const subscriptionId: string = getSubscriptionId();
 
   const networkClient = new NetworkManagementClient(generateTokenCallback(token), subscriptionId);
 
-  const publicIPAddress = await networkClient.publicIPAddresses.get(resourceGroupName, publicIpName);
+  const virtualNetwork = await networkClient.virtualNetworks.get(resourceGroupName, virtualNetworkName);
 
-  return NextResponse.json({ publicIPAddress });
+  return NextResponse.json({ virtualNetwork });
 }
