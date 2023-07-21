@@ -227,3 +227,46 @@ export function getNameSuffix(): string {
 
   return nameSuffix;
 }
+
+export async function listVMsStatus(computeClient: ComputeManagementClient, subscriptionId: string) {
+  // Set params to only ask for status
+  const virtualMachinesListAllOptionalParams = { statusOnly: "true" };
+
+  const virtualMachines = await computeClient.virtualMachines.listAll(virtualMachinesListAllOptionalParams);
+
+  const result = new Array();
+  for await (const item of virtualMachines) {
+    result.push({
+      name: item.name,
+      instanceView: {
+        statuses: [
+          item?.instanceView?.statuses?.map((status) => {
+            return {
+              displayStatus: status.displayStatus,
+              time: status.time,
+            };
+          }),
+        ],
+      },
+    });
+  }
+  return result;
+}
+
+export async function stopVM(
+  computeClient: ComputeManagementClient,
+  resourceGroupName: string,
+  virtualMachineName: string
+) {
+  const result = await computeClient.virtualMachines.beginPowerOff(resourceGroupName, virtualMachineName);
+  return result;
+}
+
+export async function startVM(
+  computeClient: ComputeManagementClient,
+  resourceGroupName: string,
+  virtualMachineName: string
+) {
+  const result = await computeClient.virtualMachines.beginStart(resourceGroupName, virtualMachineName);
+  return result;
+}

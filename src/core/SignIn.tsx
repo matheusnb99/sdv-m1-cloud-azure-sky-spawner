@@ -13,6 +13,10 @@ type handleFormSubmitType = {
   password: string;
 };
 
+const initialValues = {
+  username: "",
+  password: "",
+};
 const SignupSchema = Yup.object().shape({
   username: Yup.string().required("Required"),
   password: Yup.string()
@@ -33,7 +37,7 @@ const SignIn = () => {
 
   return (
     <div className="w-full rounded-md max-w-lg m-auto py-10 mt-10 px-10 border">
-      <Form handleFormSubmit={handleSubmit} signupSchema={SignupSchema}>
+      <Form handleFormSubmit={handleSubmit} validationSchema={SignupSchema} initialValues={initialValues}>
         <FormField name="username" label="Username" read={loading} htmlfor={""} />
         <FormField name="password" label="Password" read={loading} htmlfor="password" />
         <Button

@@ -14,8 +14,13 @@ export const UserContextProvider: FC<Props> = ({ children }) => {
   const [user, setUser] = useState<UserType | null>(null);
 
   const login: (arg0: string, arg1: string) => void = (username, password) => {
-    User.authenticate(username, password);
-    setUser(user);
+    const res = User.authenticate(username, password);
+
+    if (!res) {
+      return;
+    }
+
+    setUser(res);
   };
 
   const logout = () => {

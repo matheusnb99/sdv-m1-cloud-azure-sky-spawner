@@ -1,6 +1,6 @@
-import SignIn from "@/components/SignIn";
+import SignIn from "@/core/SignIn";
 
-const Auth = () => {
+const Auth: React.FC = () => {
   return <SignIn />;
 };
 

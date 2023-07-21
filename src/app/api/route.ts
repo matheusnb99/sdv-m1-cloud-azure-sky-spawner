@@ -45,6 +45,7 @@ export async function POST(req: Request) {
 
     const virtualNetwork = await createVirtualNetwork(networkClient, location, resourceGroupName, virtualNetworkName);
     const publicIp = await createPublicIpAddress(networkClient, location, resourceGroupName, publicIpName);
+
     const networkInterface = await createNetworkInterface(
       networkClient,
       location,
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
         adminPassword: "MyPa$$w0rd",
       },
       networkProfile: {
-        networkInterfaces: [{ primary: true, id: networkInterface.id }],
+        networkInterfaces: [{ primary: true, id: networkInterface?.id }],
       },
       storageProfile: {
         imageReference: {

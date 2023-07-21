@@ -1,4 +1,10 @@
-import { createVirtualMachine, getSubscriptionId, listVirtualMachines } from "@/lib/utils/azureTs";
+import {
+  createVirtualMachine,
+  deleteResource,
+  getSubscriptionId,
+  listVMsStatus,
+  listVirtualMachines,
+} from "@/lib/utils/azureTs";
 import { generateTokenCallback } from "@/lib/utils/generateToken";
 import { ComputeManagementClient, VirtualMachine } from "@azure/arm-compute";
 import { NetworkManagementClient } from "@azure/arm-network";
@@ -70,5 +76,43 @@ export async function GET(req: Request) {
 
   const virtualMachinesArray: VirtualMachine[] = await listVirtualMachines(computeClient);
 
+  const status = await listVMsStatus(computeClient, subscriptionId);
+
+  status.forEach((vm) => {
+    console.log(`Virtual machine ${vm.name} has status ${vm.instanceView.statuses[0].displayStatus}`);
+    console.table(vm.instanceView.statuses);
+  });
+
   return NextResponse.json({ virtualMachinesArray });
+}
+
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url);
+
+  const resourceGroupName = searchParams.get("resourceGroupName");
+  const virtualMachineName = searchParams.get("virtualMachineName");
+
+  console.log("resourceGroupName", resourceGroupName);
+  console.log("virtualMachineName", virtualMachineName);
+
+  if (!resourceGroupName || !virtualMachineName) {
+    return NextResponse.json({ error: "No resourceGroupName or virtualMachineName provided" }, { status: 400 });
+  }
+
+  const subscriptionId: string = getSubscriptionId();
+
+  const headersInstance = headers();
+  const token = headersInstance.get("Authorization");
+
+  if (!token) {
+    return NextResponse.json({ error: "No token provided" }, { status: 400 });
+  }
+
+  console.log("Deleting virtual machine...");
+
+  const computeClient = new ComputeManagementClient(generateTokenCallback(token), subscriptionId);
+
+  await deleteResource(resourceGroupName, virtualMachineName, computeClient.virtualMachines);
+
+  return NextResponse.json({ message: "Virtual machine deleted" });
 }
