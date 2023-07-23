@@ -1,8 +1,8 @@
-import { AuthContext } from "@/context/AuthContext";
-import { useCallback, useContext } from "react";
+import { useCallback, useState } from "react";
 
 const useCustomQuery = () => {
-  const { jwt } = useContext(AuthContext);
+  const [customBody, setCustomBody] = useState<RequestBody>();
+  const [path, setPath] = useState<string>("");
 
   const getBody: (formValues: UseCustomQueryProps) => RequestBody = useCallback((formValues) => {
     let body: RequestBody;
@@ -53,23 +53,6 @@ const useCustomQuery = () => {
 
     return body;
   }, []);
-  // useQuery
-  // const { data, error } = useQuery(
-  //   ["sendData", props],
-  //   async () =>
-  //     await instance.post(formValues.path, {
-  //       // jwt
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: jwt,
-  //       },
-  //       body: formValue,
-  //     }),
-  //   {
-  //     enabled: !!formValue,
-  //     staleTime: 1000 * 10, // 10 seconds
-  //   }
-  // );
 
   return { getBody };
 };

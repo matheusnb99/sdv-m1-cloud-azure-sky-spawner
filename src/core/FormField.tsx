@@ -10,7 +10,8 @@ type Props = {
   name: string;
   label?: string;
   read?: boolean;
-  otherprops?: any;
+  disabled: boolean;
+  otherprops?: React.InputHTMLAttributes<HTMLInputElement>;
 };
 
 interface FieldProps {
@@ -31,21 +32,30 @@ interface FieldProps {
 }
 
 const FormField: React.FC<Props> = (props) => {
-  const { children, customClassName, htmlfor, label, as: Component = Input, read = "false", ...otherProps } = props;
+  const {
+    children,
+    customClassName,
+    htmlfor,
+    label,
+    disabled,
+    as: Component = Input,
+    read = "false",
+    ...otherprops
+  } = props;
 
   return (
-    <Field {...otherProps}>
+    <Field {...otherprops}>
       {({ field, meta: { touched, error } }: FieldProps) => (
         <div className={customClassName}>
           <label data-htmlfor={htmlfor} className="flex items-center justify-between">
             {children}
             <Component
+              disabled={disabled}
               customClassName={`${
                 read ? "bg-gray-500 text-black" : "text-black"
               } border  text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  bg-gray-600 border-gray-500 placeholder-gray-400 input-black`}
               read={read.toString()}
               {...field}
-              {...otherProps}
             />
           </label>
           {touched && error ? <p className="block text-red-500 p-2 text-sm ml-100">{error}</p> : null}

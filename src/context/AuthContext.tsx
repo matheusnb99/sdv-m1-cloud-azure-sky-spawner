@@ -31,7 +31,7 @@ export const AuthContextProvider: FC<Props> = ({ children }) => {
     {
       enabled: false,
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 10, // 10 seconds
+      staleTime: 1000 * 30, // 10 seconds
     }
   );
 
