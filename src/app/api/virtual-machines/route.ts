@@ -1,19 +1,19 @@
-import {
-  createVirtualMachine,
-  deleteResource,
-  getSubscriptionId,
-  listVMsStatus,
-  listVirtualMachines,
-} from "@/lib/utils/azureTs";
+import { createVirtualMachine, deleteResource, getSubscriptionId, listVMsStatus } from "@/lib/utils/azureTs";
 import { generateTokenCallback } from "@/lib/utils/generateToken";
-import { ComputeManagementClient, VirtualMachine } from "@azure/arm-compute";
+import { ComputeManagementClient } from "@azure/arm-compute";
 import { NetworkManagementClient } from "@azure/arm-network";
 import { headers } from "next/dist/client/components/headers";
 import { NextResponse } from "next/server";
 
+const checkItem = (item: any) => {
+  if (!item) {
+    return NextResponse.json({ error: `No ${item} provided` }, { status: 400 });
+  }
+};
+
 export async function POST(req: Request) {
   const {
-    body: { resourceGroupName, location, virtualMachineName, networkInterfaceName },
+    body: { resourceGroupName, location, virtualMachineName, networkInterfaceName, username, password, diskName },
   } = await req.json();
 
   const headersInstance = headers();
@@ -22,6 +22,14 @@ export async function POST(req: Request) {
   if (!token) {
     return NextResponse.json({ error: "No token provided" }, { status: 400 });
   }
+
+  checkItem(resourceGroupName);
+  checkItem(location);
+  checkItem(virtualMachineName);
+  checkItem(networkInterfaceName);
+  checkItem(username);
+  checkItem(password);
+  checkItem(diskName);
 
   const subscriptionId: string = getSubscriptionId();
 
@@ -37,8 +45,8 @@ export async function POST(req: Request) {
     },
     osProfile: {
       computerName: virtualMachineName,
-      adminUsername: "MyUsername",
-      adminPassword: "MyPa$$w0rd",
+      adminUsername: username,
+      adminPassword: password,
     },
     networkProfile: {
       networkInterfaces: [{ primary: true, id: networkInterface.id }],
@@ -55,7 +63,7 @@ export async function POST(req: Request) {
         managedDisk: {
           storageAccountType: "Standard_LRS",
         },
-        name: `diskateaegaege`,
+        name: diskName,
         createOption: "FromImage",
       },
     },
@@ -76,16 +84,11 @@ export async function GET(req: Request) {
 
   const computeClient = new ComputeManagementClient(generateTokenCallback(token), subscriptionId);
 
-  const virtualMachinesArray: VirtualMachine[] = await listVirtualMachines(computeClient);
+  // const virtualMachinesArray: VirtualMachine[] = await listVirtualMachines(computeClient);
 
-  const status = await listVMsStatus(computeClient, subscriptionId);
+  const status = await listVMsStatus(computeClient);
 
-  status.forEach((vm) => {
-    console.log(`Virtual machine ${vm.name} has status ${vm.instanceView.statuses[0].displayStatus}`);
-    console.table(vm.instanceView.statuses);
-  });
-
-  return NextResponse.json({ virtualMachinesArray });
+  return NextResponse.json({ status });
 }
 
 export async function DELETE(req: Request) {

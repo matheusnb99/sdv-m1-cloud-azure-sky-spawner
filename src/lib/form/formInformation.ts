@@ -59,3 +59,17 @@ export const networkInterfaceValidationSchema = Yup.object().shape({
 export const networkInterfaceInitialValues = {
   networkInterfaceName: "interface" + nameSuffix,
 };
+
+export const virtualMachineValidationSchema = Yup.object().shape({
+  virtualMachineName: Yup.string().required("Required"),
+  username: Yup.string().required("Required"),
+  password: Yup.string().required("Required"),
+  diskName: Yup.string().required("Required"),
+});
+
+export const virtualMachineInitialValues = {
+  virtualMachineName: "machine" + nameSuffix,
+  username: "azureuser",
+  password: "Azure123456!",
+  diskName: "disk" + nameSuffix,
+};

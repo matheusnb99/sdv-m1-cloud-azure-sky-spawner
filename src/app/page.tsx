@@ -43,6 +43,10 @@ export default function Home() {
               and destroy virtual machines. You can also choose the name of the resource group, storage account, virtual
               network, public IP address, and network interface.
             </li>
+            <li>
+              If your token expires, you can click the &apos;Re Fetch Token&apos; button below to get a new one. You
+              will be redirected to Azure&apos;s interactive authentication page again.
+            </li>
           </ol>
         </div>
 
@@ -62,6 +66,20 @@ export default function Home() {
             Get Started
           </Button>
         </div>
+        {authenticated && (
+          <div className="mt-6">
+            <Button
+              onClick={() => {
+                router.push("/app");
+
+                loginAd();
+              }}
+              customClassName="px-6 py-3 text-lg text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700"
+            >
+              Re Fetch Token
+            </Button>
+          </div>
+        )}
       </main>
 
       <footer className="w-full h-20 border-t flex justify-center items-center border-gray-200">

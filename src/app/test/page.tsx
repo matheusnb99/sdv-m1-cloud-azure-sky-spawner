@@ -9,15 +9,6 @@ const testVal = Yup.object().shape({
 });
 
 const Page = () => {
-  const vmData = {
-    username: "User1",
-    password: "password1",
-    ip: "192.168.1.1",
-    os: "Ubuntu",
-    status: "running",
-    price: "20",
-  };
-
   const resourceGroupName = "myResourceGroupName";
   const location = "myLocation";
 

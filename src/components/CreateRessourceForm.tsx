@@ -1,4 +1,5 @@
 import StepComponent from "@/components/StepComponent";
+import { RessourceContext } from "@/context/RessourceContext";
 import FormField from "@/core/FormField";
 import {
   networkInterfaceInitialValues,
@@ -9,6 +10,8 @@ import {
   ressourceGroupValidationSchema,
   storageAccountInitialValues,
   storageAccountValidationSchema,
+  virtualMachineInitialValues,
+  virtualMachineValidationSchema,
   virtualNetworkInitialValues,
   virtualNetworkValidationSchema,
 } from "@/lib/form/formInformation";
@@ -16,9 +19,12 @@ import useCustomQuery from "@/lib/hooks/useCustomQuery";
 import instance from "@/lib/utils/instance";
 import { useQuery } from "@tanstack/react-query";
 
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-interface CreateRessourceFormProps {}
+interface CreateRessourceFormProps {
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
+}
 
 const Steps = [
   "ressource-groups",
@@ -29,16 +35,16 @@ const Steps = [
   "virtual-machines",
 ];
 
-const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
-  const [currentStep, setCurrentStep] = useState<number>(0);
+const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ currentStep, setCurrentStep }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<Partial<UseCustomQueryProps>>({});
   const [run, setRun] = useState<boolean>(false);
+  const { updateItem, ressources } = useContext(RessourceContext);
 
   const { getBody } = useCustomQuery();
 
   const nextStep = () => {
-    setCurrentStep((currentStep) => currentStep + 1);
+    setCurrentStep(currentStep + 1);
   };
 
   const skipToLastStep = () => {
@@ -53,7 +59,6 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
     });
   };
 
-  // useQuery
   const { data, error } = useQuery(
     ["sendData", formValues],
     async () => {
@@ -71,8 +76,9 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
         })
         .then((res) => {
           setRun(false);
+          updateItem({ id: ressources.length, ...body });
           setLoading(false);
-          setCurrentStep((prevStep) => prevStep + 1);
+          setCurrentStep(currentStep + 1);
 
           return res.data;
         });
@@ -85,12 +91,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
   );
 
   useEffect(() => {
-    console.log("currentStep" + currentStep);
-    console.log(currentStep < 1 ? true : false);
-  }, [currentStep]);
+    console.log("data");
+    console.log(data);
+  }, [data]);
 
   return (
-    <div className="w-full max-w-xs mx-auto mt-8">
+    <div className="w-full max-w-xl mx-auto mt-8">
       {currentStep == 0 && (
         <div>
           <button
@@ -180,10 +186,26 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
       )}
       {/* Repeat this pattern for the other steps */}
       {currentStep >= 6 && (
-        <div>
-          <label>Create a Virtual Machine</label>
-          {/* Insert your form fields here */}
-        </div>
+        <StepComponent
+          label={"Create Network Interface"}
+          validationSchema={virtualMachineValidationSchema}
+          initialValues={virtualMachineInitialValues}
+          handleFormSubmit={handleFormSubmit}
+          isLoading={loading && currentStep == 6}
+        >
+          <FormField name="virtualMachineName" htmlfor="virtualMachineName" disabled={loading || currentStep > 6}>
+            Virtual Machine Name
+          </FormField>
+          <FormField name="username" htmlfor="username" disabled={loading || currentStep > 6}>
+            Virtual Machine Name
+          </FormField>
+          <FormField name="password" htmlfor="password" disabled={loading || currentStep > 6}>
+            Virtual Machine Name
+          </FormField>
+          <FormField name="diskName" htmlfor="diskName" disabled={loading || currentStep > 6}>
+            Virtual Machine Name
+          </FormField>
+        </StepComponent>
       )}
     </div>
   );

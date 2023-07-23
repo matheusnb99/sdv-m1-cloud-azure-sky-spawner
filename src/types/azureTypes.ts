@@ -50,6 +50,9 @@ type NetworkInterfaceProps = {
 type VirtualMachineProps = {
   virtualMachineName: string;
   networkInterfaceName: string;
+  diskName: string;
+  username: string;
+  password: string;
 };
 
 type PathType =

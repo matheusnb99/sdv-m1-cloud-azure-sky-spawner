@@ -82,7 +82,10 @@ export async function listVirtualMachines(computeClient: ComputeManagementClient
     console.log(
       `${index++}): ${virtualMachine.name}\t\t${virtualMachine.location}\t${virtualMachine.provisioningState}`
     );
-    virtualMachinesArray.push(virtualMachine);
+    virtualMachinesArray.push({
+      name: virtualMachine.name,
+      location: virtualMachine.location,
+    });
   }
   console.log(`Found ${index} virtual machines:`);
 
@@ -144,7 +147,11 @@ export async function createPublicIpAddress(
   console.log(
     `Creating "${name}" public IP address in ${resourceGroupName} resource group in ${networkClient.subscriptionId} subscription`
   );
-  await networkClient.publicIPAddresses.beginCreateOrUpdateAndWait(resourceGroupName, name, parameters);
+  const publicIpInfo = await networkClient.publicIPAddresses.beginCreateOrUpdateAndWait(
+    resourceGroupName,
+    name,
+    parameters
+  );
   const publicIPAddress = await networkClient.publicIPAddresses.get(resourceGroupName, name);
   console.log(`Virtual network "${publicIPAddress.name}" was created successfully`);
   return publicIPAddress;
@@ -228,7 +235,7 @@ export function getNameSuffix(): string {
   return nameSuffix;
 }
 
-export async function listVMsStatus(computeClient: ComputeManagementClient, subscriptionId: string) {
+export async function listVMsStatus(computeClient: ComputeManagementClient) {
   // Set params to only ask for status
   const virtualMachinesListAllOptionalParams = { statusOnly: "true" };
 
@@ -236,18 +243,17 @@ export async function listVMsStatus(computeClient: ComputeManagementClient, subs
 
   const result = new Array();
   for await (const item of virtualMachines) {
+    const status = item.instanceView?.statuses?.map((status) => {
+      return {
+        displayStatus: status.displayStatus,
+        time: status.time,
+      };
+    });
+
     result.push({
       name: item.name,
-      instanceView: {
-        statuses: [
-          item?.instanceView?.statuses?.map((status) => {
-            return {
-              displayStatus: status.displayStatus,
-              time: status.time,
-            };
-          }),
-        ],
-      },
+      vmID: item.vmId,
+      status: status,
     });
   }
   return result;

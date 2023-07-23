@@ -46,6 +46,9 @@ const useCustomQuery = () => {
         location: formValues.location,
         virtualMachineName: formValues.virtualMachineName as string,
         networkInterfaceName: formValues.networkInterfaceName as string,
+        diskName: formValues.diskName as string,
+        username: formValues.username as string,
+        password: formValues.password as string,
       };
     } else {
       throw new Error("Invalid path");

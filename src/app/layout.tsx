@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthContext, AuthContextProvider } from "@/context/AuthContext";
+import { RessourceContextProvider } from "@/context/RessourceContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
 import { useContext } from "react";
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
-          <AuthContextProvider>{children}</AuthContextProvider>
+          <AuthContextProvider>
+            <RessourceContextProvider>{children}</RessourceContextProvider>
+          </AuthContextProvider>
         </QueryClientProvider>
       </body>
     </html>
