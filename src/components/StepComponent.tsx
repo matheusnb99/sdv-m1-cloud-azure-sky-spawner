@@ -1,73 +1,64 @@
 import Form from "@/components/Form";
 import { AuthContext } from "@/context/AuthContext";
 import Button from "@/core/Button";
-import instance from "@/lib/utils/instance";
-import { useQuery } from "@tanstack/react-query";
 import { FunctionComponent, ReactNode, useContext, useState } from "react";
 
 interface StepComponentProps {
   label: string;
   children: ReactNode;
-  path: string;
   validationSchema: any;
   initialValues: any;
-  setStep: (step: any) => void;
+  setCurrentStep: (step: any) => void;
+  handleFormSubmit: (values: RequestBody) => void; // new prop
 }
 
 const StepComponent: FunctionComponent<StepComponentProps> = ({
   label,
-  setStep,
-  path,
+  setCurrentStep,
   validationSchema,
   initialValues,
+  handleFormSubmit,
   children,
 }) => {
-  const [formValue, setFormValue] = useState<any>(null);
+  const [formValues, setFormValues] = useState<Partial<RequestBody>>({});
   const { jwt } = useContext(AuthContext);
 
   const nextStep = () => {
-    if (error) {
-      return;
-    }
-    setStep((currentStep: number) => currentStep + 1);
+    // if (error) {
+    //   return;
+    // }
+    setCurrentStep((currentStep: number) => currentStep + 1);
   };
 
   const previousStep = () => {
-    setStep((currentStep: number) => currentStep - 1);
+    setCurrentStep((currentStep: number) => currentStep - 1);
   };
 
-  const handleFormSubmit = (values: any) => {
-    console.log("Form submitted");
-    nextStep();
-    setFormValue(values);
-    console.log(values);
-  };
+  // // useQuery
+  // const { data, error } = useQuery(
+  //   ["sendData", formValue],
+  //   async () =>
+  //     await instance.post(path, {
+  //       // jwt
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: jwt,
+  //       },
+  //       body: formValue,
+  //     }),
+  //   {
+  //     enabled: !!formValue,
+  //     staleTime: 1000 * 10, // 10 seconds
+  //   }
+  // );
 
-  // useQuery
-  const { data, error } = useQuery(
-    ["sendData", formValue],
-    async () =>
-      await instance.post(path, {
-        // jwt
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: jwt,
-        },
-        body: formValue,
-      }),
-    {
-      enabled: !!formValue,
-      staleTime: 1000 * 10, // 10 seconds
-    }
-  );
+  // if (error) {
+  //   console.log(error);
+  // }
 
-  if (error) {
-    console.log(error);
-  }
-
-  if (data) {
-    console.log(data);
-  }
+  // if (data) {
+  //   console.log(data);
+  // }
 
   return (
     <div>

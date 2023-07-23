@@ -26,10 +26,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
-<<<<<<< HEAD
 .env
-=======
->>>>>>> 20e55cc935517809366060223f92048066e24bea
 
 # vercel
 .vercel
@@ -37,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# to do file
+todos.txt

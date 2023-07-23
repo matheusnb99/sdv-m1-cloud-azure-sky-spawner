@@ -12,30 +12,127 @@ import {
   virtualNetworkInitialValues,
   virtualNetworkValidationSchema,
 } from "@/lib/form/formInformation";
+import useCustomQuery from "@/lib/hooks/useCustomQuery";
 
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 interface CreateRessourceFormProps {}
 
+const Steps = [
+  "ressource-groups",
+  "storage-account",
+  "virtual-network",
+  "public-ip",
+  "network-interface",
+  "virtual-machines",
+];
+
 const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
-  const [step, setStep] = useState<number>(0);
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [formValues, setFormValues] = useState<Partial<UseCustomQueryProps>>({}); // new state for form values
+  const [bodyValues, setBodyValues] = useState<Partial<RequestBody>>({});
+
+  const { getBody } = useCustomQuery();
 
   const nextStep = () => {
-    setStep(step + 1);
+    setCurrentStep((currentStep) => currentStep + 1);
   };
 
   const previousStep = () => {
-    setStep(step - 1);
+    setCurrentStep((currentStep) => currentStep - 1);
   };
 
   const skipToLastStep = () => {
-    setStep(6);
+    setCurrentStep(6);
   };
+
+  const handleFormSubmit = async (values: RequestBody) => {
+    await setFormValues((prevValues) => {
+      const path = Steps[currentStep - 1] as PathType;
+
+      return { ...prevValues, ...values, path };
+    });
+    setCurrentStep((prevStep) => prevStep + 1);
+
+    // const body = getBody({ ...values, path } as UseCustomQueryProps);
+    // console.log(body);
+  };
+
+  useEffect(() => {
+    if (formValues && Object.keys(formValues).length === 0 && formValues.constructor === Object) {
+      return;
+    }
+    const body = getBody({ ...formValues } as UseCustomQueryProps);
+    console.log(body);
+  }, [formValues, getBody]);
+
+  useEffect(() => {
+    let requestBody: UseCustomQueryProps;
+
+    // switch (path) {
+    //   case "ressource-groups":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       projectName: formValues.projectName as string,
+    //     };
+    //     break;
+    //   case "storage-account":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       projectName: formValues.projectName as string,
+    //       storageAccountName: formValues.storageAccountName as string,
+    //       accType: formValues.accType as string,
+    //     };
+    //     break;
+
+    //   case "virtual-network":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       virtualNetworkName: formValues.virtualNetworkName as string,
+    //     };
+    //     break;
+    //   case "public-ip":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       publicIpName: formValues.publicIpName as string,
+    //     };
+    //     break;
+    //   case "network-interface":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       networkInterfaceName: formValues.networkInterfaceName as string,
+    //       virtualNetworkName: formValues.virtualNetworkName as string,
+    //       publicIpName: formValues.publicIpName as string,
+    //     };
+    //     break;
+    //   case "virtual-machines":
+    //     requestBody = {
+    //       resourceGroupName: formValues.resourceGroupName as string,
+    //       location: formValues.location as string,
+    //       path: path,
+    //       virtualMachineName: formValues.virtualMachineName as string,
+    //       networkInterfaceName: formValues.networkInterfaceName as string,
+    //     };
+    //     break;
+    // }
+
+    // ... do something with the `body`
+  }, [formValues]);
 
   return (
     <div className="w-full max-w-xs mx-auto mt-8">
-      {step >= 0 && (
+      {currentStep >= 0 && (
         <div>
           <button
             onClick={skipToLastStep}
@@ -48,13 +145,13 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
           </button>
         </div>
       )}
-      {step >= 1 && (
+      {currentStep >= 1 && (
         <StepComponent
-          setStep={setStep}
+          setCurrentStep={setCurrentStep}
           label={"Create Resource Group"}
           validationSchema={ressourceGroupValidationSchema}
           initialValues={ressourceGroupInitialValues}
-          path="ressource-groups"
+          handleFormSubmit={handleFormSubmit}
         >
           <FormField name="projectName" read={loading} htmlfor="projectName">
             Project Name
@@ -67,13 +164,13 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
           </FormField>
         </StepComponent>
       )}
-      {step >= 2 && (
+      {currentStep >= 2 && (
         <StepComponent
-          setStep={setStep}
+          setCurrentStep={setCurrentStep}
           label={"Create Storage Account"}
           validationSchema={storageAccountValidationSchema}
           initialValues={storageAccountInitialValues}
-          path="storage-account"
+          handleFormSubmit={handleFormSubmit}
         >
           <FormField name="storageAccountName" read={loading} htmlfor="projectName">
             Storage Account Name
@@ -83,39 +180,39 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
           </FormField>
         </StepComponent>
       )}
-      {step >= 3 && (
+      {currentStep >= 3 && (
         <StepComponent
-          setStep={setStep}
+          setCurrentStep={setCurrentStep}
           label={"Create Virtual Network"}
           validationSchema={virtualNetworkValidationSchema}
           initialValues={virtualNetworkInitialValues}
-          path="virtual-network"
+          handleFormSubmit={handleFormSubmit}
         >
           <FormField name="virtualNetworkName" read={loading} htmlfor="projectName">
             Virtual Network Name
           </FormField>
         </StepComponent>
       )}
-      {step >= 4 && (
+      {currentStep >= 4 && (
         <StepComponent
-          setStep={setStep}
+          setCurrentStep={setCurrentStep}
           label={"Create Public Ip Address"}
           validationSchema={publicIpAdressValidationSchema}
           initialValues={publicIpAdressInitialValues}
-          path="public-ip"
+          handleFormSubmit={handleFormSubmit}
         >
           <FormField name="publicIpName" read={loading} htmlfor="publicIpName">
             Public Ip Adress Name
           </FormField>
         </StepComponent>
       )}
-      {step >= 5 && (
+      {currentStep >= 5 && (
         <StepComponent
-          setStep={setStep}
+          setCurrentStep={setCurrentStep}
           label={"Create Network Interface"}
           validationSchema={networkInterfaceValidationSchema}
           initialValues={networkInterfaceInitialValues}
-          path="network-interface"
+          handleFormSubmit={handleFormSubmit}
         >
           <FormField name="networkInterfaceName" read={loading} htmlfor="networkInterfaceName">
             Network Interface Name
@@ -123,7 +220,7 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
         </StepComponent>
       )}
       {/* Repeat this pattern for the other steps */}
-      {step >= 6 && (
+      {currentStep >= 6 && (
         <div>
           <label>Create a Virtual Machine</label>
           {/* Insert your form fields here */}

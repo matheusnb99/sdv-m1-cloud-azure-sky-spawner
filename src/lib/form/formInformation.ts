@@ -6,9 +6,9 @@ export const ressourceGroupValidationSchema = Yup.object().shape({
   resourceGroupName: Yup.string().required("Required"),
 });
 export const ressourceGroupInitialValues = {
-  projectName: "",
-  location: "",
-  resourceGroupName: "",
+  projectName: "projectName",
+  location: "location",
+  resourceGroupName: "ressourceGroupName",
 };
 
 export const storageAccountValidationSchema = Yup.object().shape({
@@ -16,8 +16,8 @@ export const storageAccountValidationSchema = Yup.object().shape({
   accType: Yup.string().required("Required"),
 });
 export const storageAccountInitialValues = {
-  storageAccountName: "",
-  accType: "",
+  storageAccountName: "storageAccountName",
+  accType: "accType",
 };
 
 export const virtualNetworkValidationSchema = Yup.object().shape({
