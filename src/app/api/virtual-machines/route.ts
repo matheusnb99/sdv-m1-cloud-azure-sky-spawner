@@ -12,7 +12,9 @@ import { headers } from "next/dist/client/components/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { resourceGroupName, location, virtualMachineName, networkInterfaceName } = await req.json();
+  const {
+    body: { resourceGroupName, location, virtualMachineName, networkInterfaceName },
+  } = await req.json();
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");

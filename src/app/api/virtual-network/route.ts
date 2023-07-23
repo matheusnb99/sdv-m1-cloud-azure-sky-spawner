@@ -7,7 +7,9 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   console.log("Generating virtual network");
 
-  const { resourceGroupName, location, virtualNetworkName } = await req.json();
+  const {
+    body: { resourceGroupName, location, virtualNetworkName },
+  } = await req.json();
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");

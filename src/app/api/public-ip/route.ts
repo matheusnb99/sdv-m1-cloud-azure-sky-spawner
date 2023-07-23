@@ -6,7 +6,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   console.log("Generating public IP");
-  const { resourceGroupName, location, publicIpName } = await req.json();
+  const {
+    body: { resourceGroupName, location, publicIpName },
+  } = await req.json();
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");

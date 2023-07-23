@@ -5,13 +5,22 @@ import { headers } from "next/dist/client/components/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  const { resourceGroupName, location, projectName } = await req.json();
+  const {
+    body: { resourceGroupName, location, projectName },
+  } = await req.json();
+  console.log("In ressource-groups route");
+
+  console.log(resourceGroupName);
 
   const headersInstance = headers();
   const token = headersInstance.get("Authorization");
 
   if (!token) {
     return NextResponse.json({ error: "No token provided" }, { status: 400 });
+  }
+
+  if (!resourceGroupName || !location || !projectName) {
+    return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
   }
 
   const subscriptionId: string = getSubscriptionId();
