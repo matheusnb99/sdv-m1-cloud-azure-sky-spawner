@@ -6,6 +6,7 @@ type Props = {
 
 type RessourceType = {
   id: number;
+  step: number;
 } & RequestBody;
 
 type RessourceContextType = {

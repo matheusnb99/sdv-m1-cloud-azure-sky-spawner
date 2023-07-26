@@ -37,6 +37,12 @@ export default function Home() {
             <li>
               After you&apos;ve authenticated with Azure, you&apos;ll be redirected to our authentication page. You can
               log in with any of the three user profiles provided.
+              <br />
+              username: "user1", password: "password1",
+              <br />
+              username: "user1", password: "password1",
+              <br />
+              username: "user3", password: "password3",
             </li>
             <li>
               If the profile you&apos;ve selected has the necessary permissions, you&apos;ll be able to create, start

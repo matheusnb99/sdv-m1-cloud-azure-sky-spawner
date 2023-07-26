@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 
 import Image from "next/image";
+import prettyMilliseconds from "pretty-ms";
 import debian from "../..//public/images/debian.png";
 
 interface VmProps {
@@ -12,11 +13,13 @@ interface VmProps {
     status: string;
     price: string;
   };
+  lapse: number;
 }
 
 const Vm: FunctionComponent<VmProps> = (props) => {
   const {
     vmData: { username, password, ip, os, status, price },
+    lapse,
   } = props;
 
   const handleStartStop = () => {
@@ -39,6 +42,7 @@ const Vm: FunctionComponent<VmProps> = (props) => {
         <p>OS: {os}</p>
         <p>Status: {status}</p>
         <p>Price: {price}</p>
+        <p>Deleting in {prettyMilliseconds(lapse)}</p>
       </div>
       <div className="flex flex-col justify-between items-center">
         <button onClick={handleStartStop} className="mb-2 py-2 px-4 bg-blue-500 text-white rounded">

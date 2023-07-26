@@ -22,7 +22,7 @@ export const AuthContextProvider: FC<Props> = ({ children }) => {
         .post("auth")
         .then((response) => {
           setAuthenticated(true);
-          localStorage.setItem("session_jwt", response.data.token.token);
+          localStorage.setItem("session_jwt_project_nunes_2023", response.data.token.token);
           return response;
         })
         .catch((error) => {
@@ -45,7 +45,7 @@ export const AuthContextProvider: FC<Props> = ({ children }) => {
   };
 
   useEffect(() => {
-    const jwt = localStorage.getItem("session_jwt");
+    const jwt = localStorage.getItem("session_jwt_project_nunes_2023");
 
     setJwt(jwt);
     setAuthenticated(!!jwt); // !! converts to boolean (true if jwt is not null)

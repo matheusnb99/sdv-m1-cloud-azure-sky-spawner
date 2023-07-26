@@ -14,7 +14,6 @@ const Application: FunctionComponent<ApplicationProps> = () => {
   const { user } = useContext(UserContext);
   const { loginAd } = useContext(AuthContext);
   const [currentStep, setCurrentStep] = useState<number>(0);
-
   const [createRessourcesPopup, setCreateRessourcesPopup] = useState<boolean>(false);
 
   const { jwt } = useContext(AuthContext);
@@ -26,8 +25,9 @@ const Application: FunctionComponent<ApplicationProps> = () => {
   const setStep = (step: number) => {
     setCurrentStep(step);
 
-    if (step === 7) {
+    if (step > 6) {
       setCreateRessourcesPopup(false);
+      setCurrentStep(0);
     }
   };
 
@@ -47,6 +47,15 @@ const Application: FunctionComponent<ApplicationProps> = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <main>
+        <h1 className="text-6xl font-bold text-center text-red-600">Creation de VM</h1>
+        <div className="flex min-h-screen flex-col items-center justify-evenly p-24">{!user && <Auth />}</div>;
+      </main>
+    );
+  }
+
   return (
     <main>
       <h1 className="text-6xl font-bold text-center text-red-600">Creation de VM</h1>
@@ -56,6 +65,7 @@ const Application: FunctionComponent<ApplicationProps> = () => {
             type="button"
             onClick={() => {
               setCreateRessourcesPopup(false);
+              setCurrentStep(0);
             }}
           >
             Close PopUp
@@ -67,33 +77,9 @@ const Application: FunctionComponent<ApplicationProps> = () => {
 
       {!createRessourcesPopup && (
         <>
-          {user && (
-            <>
-              {user.credits == 0 && (
-                /* button that opens popup */
-                <>Currently you dont have enought money to create a vm</>
-              )}
-
-              {user.credits > 0 && (
-                /* button that opens popup */
-                <>
-                  <VmList />
-                  Currently you don&apos;t have any vms!
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      setCreateRessourcesPopup(true);
-                    }}
-                  >
-                    Create One!
-                  </Button>
-                </>
-              )}
-            </>
-          )}
+          <VmList setPopup={setCreateRessourcesPopup} />
         </>
       )}
-      <div className="flex min-h-screen flex-col items-center justify-evenly p-24">{!user && <Auth />}</div>
     </main>
   );
 };

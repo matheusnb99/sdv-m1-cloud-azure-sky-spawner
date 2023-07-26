@@ -19,7 +19,7 @@ import useCustomQuery from "@/lib/hooks/useCustomQuery";
 import instance from "@/lib/utils/instance";
 import { useQuery } from "@tanstack/react-query";
 
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 
 interface CreateRessourceFormProps {
   currentStep: number;
@@ -48,8 +48,21 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
   };
 
   const skipToLastStep = () => {
-    setCurrentStep(6);
+    const tempRessources = ressources.find((item) => item.step > 3);
+    if (tempRessources === undefined) {
+      console.log("No ressources found");
+
+      return;
+    }
+    setFormValues(tempRessources);
+
+    if (tempRessources.step <= 4) {
+      setCurrentStep(tempRessources.step);
+      return;
+    }
+    setCurrentStep(4);
   };
+
   const path = Steps[currentStep - 1] as PathType;
 
   const handleFormSubmit = async (values: RequestBody) => {
@@ -64,6 +77,8 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
     async () => {
       const body = getBody({ ...formValues } as UseCustomQueryProps);
 
+      console.log(body);
+
       if (!path) {
         return;
       }
@@ -76,11 +91,22 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
         })
         .then((res) => {
           setRun(false);
-          updateItem({ id: ressources.length, ...body });
           setLoading(false);
+
+          if (currentStep > 6) {
+            console.log("Finished");
+            updateItem({ id: ressources.length, step: currentStep, ...formValues });
+
+            setFormValues({});
+            setCurrentStep(0);
+          }
           setCurrentStep(currentStep + 1);
 
           return res.data;
+        })
+        .catch((err) => {
+          // setCurrentStep(currentStep - 1);
+          console.log(err);
         });
     },
     {
@@ -90,21 +116,18 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
     }
   );
 
-  useEffect(() => {
-    console.log("data");
-    console.log(data);
-  }, [data]);
-
   return (
     <div className="w-full max-w-xl mx-auto mt-8">
       {currentStep == 0 && (
         <div>
-          <button
-            onClick={skipToLastStep}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-3"
-          >
-            Use already typed information
-          </button>
+          {/* {ressources.length > 0 && (
+            <button
+              onClick={skipToLastStep}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-3"
+            >
+              Use already typed information
+            </button>
+          )} */}
           <button onClick={nextStep} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Create new resources
           </button>
