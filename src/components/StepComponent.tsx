@@ -1,29 +1,102 @@
+"use client";
+
 import Form from "@/components/Form";
+import { RessourceContext } from "@/context/RessourceContext";
 import Button from "@/core/Button";
-import { FunctionComponent, ReactNode, useState } from "react";
+import useCustomQuery from "@/lib/hooks/useCustomQuery";
+import {
+  _createNetworkInterface,
+  _createPublicIpAddress,
+  _createRessourceGroup,
+  _createStorageAccount,
+  _createVirtualMachine,
+  _createVirtualNetwork,
+} from "@/lib/serverfunctions/createAzureRessources";
+import { FunctionComponent, ReactNode, useContext, useState } from "react";
 
 interface StepComponentProps {
+  id: number;
   label: string;
   children: ReactNode;
   validationSchema: any;
   initialValues: any;
-  isLoading: boolean;
-  handleFormSubmit: (values: RequestBody) => void; // new prop
+  formValues: any;
+  setFormValues: (args: any) => void;
 }
 
+const Steps = [
+  "ressource-groups",
+  "storage-account",
+  "virtual-network",
+  "public-ip",
+  "network-interface",
+  "virtual-machines",
+];
+
 const StepComponent: FunctionComponent<StepComponentProps> = ({
+  id,
   label,
   validationSchema,
   initialValues,
-  handleFormSubmit,
-  isLoading,
+  formValues,
+  setFormValues,
   children,
 }) => {
+  const { getBody } = useCustomQuery();
   const [isSent, setIsSent] = useState<boolean>(false);
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = (values: RequestBody) => {
+  const { currentStep, setCurrentStep } = useContext(RessourceContext);
+
+  const path = Steps[id] as PathType;
+
+  const handleSubmit = async (values: RequestBody) => {
     setIsSent(true);
-    handleFormSubmit(values);
+    setIsLoading(true);
+
+    console.log(path);
+
+    await setFormValues({ ...formValues, ...values, path });
+
+    const body = getBody({ ...formValues, ...values, path } as UseCustomQueryProps);
+
+    let res = null;
+
+    switch (id) {
+      case 0:
+        res = await _createRessourceGroup(body);
+
+        break;
+      case 1:
+        res = await _createStorageAccount(body);
+
+        break;
+      case 2:
+        res = await _createVirtualNetwork(body);
+
+        break;
+      case 3:
+        res = await _createPublicIpAddress(body);
+
+        break;
+      case 4:
+        res = await _createNetworkInterface(body);
+
+        break;
+      case 5:
+        res = await _createVirtualMachine(body);
+
+        break;
+
+      default:
+        break;
+    }
+    if (res) {
+      setIsSuccess(true);
+      setCurrentStep(currentStep + 1);
+      setIsLoading(false);
+    }
   };
 
   return (

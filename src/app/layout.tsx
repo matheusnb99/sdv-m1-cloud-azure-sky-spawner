@@ -1,10 +1,8 @@
 "use client";
 
-import { AuthContext, AuthContextProvider } from "@/context/AuthContext";
 import { RessourceContextProvider } from "@/context/RessourceContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Inter } from "next/font/google";
-import { useContext } from "react";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,14 +14,11 @@ export const metadata = {
 const queryClient = new QueryClient();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const context = useContext(AuthContext);
   return (
     <html lang="en">
       <body className={inter.className}>
         <QueryClientProvider client={queryClient}>
-          <AuthContextProvider>
-            <RessourceContextProvider>{children}</RessourceContextProvider>
-          </AuthContextProvider>
+          <RessourceContextProvider>{children}</RessourceContextProvider>
         </QueryClientProvider>
       </body>
     </html>

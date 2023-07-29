@@ -1,5 +1,22 @@
-import { UserContextProvider } from "@/context/UserContext";
+import SignOutButton from "@/components/SignOutButton";
+import { User } from "@/lib/utils/db/User";
+import { cookies } from "next/headers";
 
-export default function UserLayout({ children }: { children: React.ReactNode }) {
-  return <UserContextProvider>{children}</UserContextProvider>;
+export default async function UserLayout({ children }: { children: React.ReactNode }) {
+  const username = cookies().get("account_jwt_token")?.value;
+
+  if (!username) {
+    return <>No username</>;
+  }
+
+  const user = User.getUser(username);
+
+  return (
+    <>
+      <div>{user?.username}</div>
+      <div>{user?.credits}</div>
+      <SignOutButton />
+      {children};
+    </>
+  );
 }

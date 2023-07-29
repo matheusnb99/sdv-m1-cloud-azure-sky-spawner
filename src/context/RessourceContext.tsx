@@ -1,3 +1,4 @@
+"use client";
 import { FC, createContext, useEffect, useState } from "react";
 
 type Props = {
@@ -13,12 +14,15 @@ type RessourceContextType = {
   ressources: RessourceType[];
   addItem: (item: RessourceType) => void;
   updateItem: (item: RessourceType) => void;
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
 };
 
 export const RessourceContext = createContext<RessourceContextType>(null!);
 
 export const RessourceContextProvider: FC<Props> = ({ children }) => {
   const [ressources, setRessources] = useState<RessourceType[]>([]);
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   const addItem = (item: RessourceType) => {
     setRessources([...ressources, item]);
@@ -40,5 +44,9 @@ export const RessourceContextProvider: FC<Props> = ({ children }) => {
     }
   }, []);
 
-  return <RessourceContext.Provider value={{ ressources, addItem, updateItem }}>{children}</RessourceContext.Provider>;
+  return (
+    <RessourceContext.Provider value={{ ressources, addItem, updateItem, currentStep, setCurrentStep }}>
+      {children}
+    </RessourceContext.Provider>
+  );
 };

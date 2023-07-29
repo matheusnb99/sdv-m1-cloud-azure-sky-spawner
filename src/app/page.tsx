@@ -1,13 +1,8 @@
-"use client";
-import { AuthContext } from "@/context/AuthContext";
-import Button from "@/core/Button";
+import SetCookieButton from "@/components/SetCookieButton";
 import Head from "next/head";
-import { useRouter } from "next/navigation";
-import { useContext } from "react";
 
 export default function Home() {
-  const { loginAd, authenticated } = useContext(AuthContext);
-  const router = useRouter();
+  // const { loginAd, authenticated } = useContext(AuthContext);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
@@ -21,7 +16,7 @@ export default function Home() {
           Welcome to{" "}
           <span className="text-blue-600">
             Cloud VM Launcher
-            {authenticated}
+            {/* {authenticated} */}
           </span>
         </h1>
 
@@ -38,11 +33,11 @@ export default function Home() {
               After you&apos;ve authenticated with Azure, you&apos;ll be redirected to our authentication page. You can
               log in with any of the three user profiles provided.
               <br />
-              username: "user1", password: "password1",
+              username: &ldquo;user1&ldquo;, password: &ldquo;password1&ldquo;,
               <br />
-              username: "user1", password: "password1",
+              username: &ldquo;user1&ldquo;, password: &ldquo;password1&ldquo;,
               <br />
-              username: "user3", password: "password3",
+              username: &ldquo;user3&ldquo;, password: &ldquo;password3&ldquo;,
             </li>
             <li>
               If the profile you&apos;ve selected has the necessary permissions, you&apos;ll be able to create, start
@@ -57,35 +52,8 @@ export default function Home() {
         </div>
 
         <div className="mt-6">
-          <Button
-            onClick={() => {
-              router.push("/app");
-
-              if (!authenticated) {
-                console.log("not authenticated");
-
-                loginAd();
-              }
-            }}
-            customClassName="px-6 py-3 text-lg text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700"
-          >
-            Get Started
-          </Button>
+          <SetCookieButton />
         </div>
-        {authenticated && (
-          <div className="mt-6">
-            <Button
-              onClick={() => {
-                router.push("/app");
-
-                loginAd();
-              }}
-              customClassName="px-6 py-3 text-lg text-white bg-blue-600 rounded-lg shadow-lg hover:bg-blue-700"
-            >
-              Re Fetch Token
-            </Button>
-          </div>
-        )}
       </main>
 
       <footer className="w-full h-20 border-t flex justify-center items-center border-gray-200">

@@ -3,10 +3,10 @@
 import Form from "@/components/Form";
 import Button from "@/core/Button";
 import FormField from "@/core/FormField";
+import { setCookie } from "@/lib/utils/setCookie";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import * as Yup from "yup";
-import { UserContext } from "../context/UserContext";
 
 type handleFormSubmitType = {
   username: string;
@@ -28,11 +28,13 @@ const SignupSchema = Yup.object().shape({
 const SignIn = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { login, user } = useContext(UserContext);
 
   const handleSubmit: (arg0: handleFormSubmitType) => void = ({ username, password }) => {
     setLoading(true);
-    login(username, password);
+    setCookie({ name: "account", username: username, password: password });
+
+    console.log("where");
+    router.push("/app");
   };
 
   return (

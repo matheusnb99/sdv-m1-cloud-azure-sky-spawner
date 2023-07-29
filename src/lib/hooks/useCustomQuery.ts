@@ -17,6 +17,7 @@ const useCustomQuery = () => {
         resourceGroupName: formValues.resourceGroupName,
         location: formValues.location,
         projectName: formValues.projectName as string,
+        storageAccountName: formValues.storageAccountName as string,
         accType: formValues.accType as string,
       };
     } else if (formValues.path === "virtual-network") {
@@ -50,6 +51,8 @@ const useCustomQuery = () => {
         password: formValues.password as string,
       };
     } else {
+      console.log(formValues);
+
       throw new Error("Invalid path");
     }
 

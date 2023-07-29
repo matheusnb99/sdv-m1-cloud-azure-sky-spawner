@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model ResourceGroup {
+  id                 Int       @id @default(autoincrement())
+  resourceGroupName  String
+  location           String
+  projectName        String
+}
+
+model NetworkInterface {
+  id                    Int       @id @default(autoincrement())
+  resourceGroupName     String
+  virtualNetworkName    String
+  publicIpName          String
+  location              String
+  networkInterfaceName  String
+}
+
+model PublicIpAddress {
+  id                 Int       @id @default(autoincrement())
+  resourceGroupName  String
+  publicIpName       String
+  location           String
+}
+
+model StorageAccount {
+  id                 Int       @id @default(autoincrement())
+  resourceGroupName  String
+  storageAccountName String
+  accType            String
+  location           String
+  projectName        String
+}
+
+model VirtualMachine {
+  id                 Int       @id @default(autoincrement())
+  resourceGroupName  String
+  virtualMachineName String
+  networkInterfaceName String
+  location           String
+  username           String
+  password           String
+  diskName           String
+}
+
+model VirtualNetwork {
+  id                 Int       @id @default(autoincrement())
+  resourceGroupName  String
+  virtualNetworkName String
+  location           String
+}

@@ -1,3 +1,4 @@
+"use client";
 import { Field } from "formik";
 import React from "react";
 import Input from "./Input";
@@ -10,7 +11,7 @@ type Props = {
   name: string;
   label?: string;
   read?: boolean;
-  disabled: boolean;
+  disabled?: boolean;
   otherprops?: React.InputHTMLAttributes<HTMLInputElement>;
 };
 

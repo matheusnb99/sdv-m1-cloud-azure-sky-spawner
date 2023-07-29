@@ -82,6 +82,9 @@ export async function listVirtualMachines(computeClient: ComputeManagementClient
     console.log(
       `${index++}): ${virtualMachine.name}\t\t${virtualMachine.location}\t${virtualMachine.provisioningState}`
     );
+
+    console.log(virtualMachine);
+
     virtualMachinesArray.push({
       name: virtualMachine.name,
       location: virtualMachine.location,
@@ -249,10 +252,12 @@ export async function listVMsStatus(computeClient: ComputeManagementClient) {
         time: status.time,
       };
     });
+    console.log(item);
 
     result.push({
       name: item.name,
       vmID: item.vmId,
+      location: item.location,
       status: status,
     });
   }

@@ -1,3 +1,5 @@
+"use client";
+
 import StepComponent from "@/components/StepComponent";
 import { RessourceContext } from "@/context/RessourceContext";
 import FormField from "@/core/FormField";
@@ -15,33 +17,15 @@ import {
   virtualNetworkInitialValues,
   virtualNetworkValidationSchema,
 } from "@/lib/form/formInformation";
-import useCustomQuery from "@/lib/hooks/useCustomQuery";
-import instance from "@/lib/utils/instance";
-import { useQuery } from "@tanstack/react-query";
 
 import { FunctionComponent, useContext, useState } from "react";
 
-interface CreateRessourceFormProps {
-  currentStep: number;
-  setCurrentStep: (step: number) => void;
-}
+interface CreateRessourceFormProps {}
 
-const Steps = [
-  "ressource-groups",
-  "storage-account",
-  "virtual-network",
-  "public-ip",
-  "network-interface",
-  "virtual-machines",
-];
-
-const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ currentStep, setCurrentStep }) => {
+const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [formValues, setFormValues] = useState<Partial<UseCustomQueryProps>>({});
-  const [run, setRun] = useState<boolean>(false);
-  const { updateItem, ressources } = useContext(RessourceContext);
-
-  const { getBody } = useCustomQuery();
+  const { ressources, currentStep, setCurrentStep } = useContext(RessourceContext);
 
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
@@ -63,59 +47,6 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
     setCurrentStep(4);
   };
 
-  const path = Steps[currentStep - 1] as PathType;
-
-  const handleFormSubmit = async (values: RequestBody) => {
-    setRun(true);
-    await setFormValues((prevValues) => {
-      return { ...prevValues, ...values, path };
-    });
-  };
-
-  const { data, error } = useQuery(
-    ["sendData", formValues],
-    async () => {
-      const body = getBody({ ...formValues } as UseCustomQueryProps);
-
-      console.log(body);
-
-      if (!path) {
-        return;
-      }
-
-      setLoading(true);
-
-      return await instance
-        .post(path, {
-          body: body,
-        })
-        .then((res) => {
-          setRun(false);
-          setLoading(false);
-
-          if (currentStep > 6) {
-            console.log("Finished");
-            updateItem({ id: ressources.length, step: currentStep, ...formValues });
-
-            setFormValues({});
-            setCurrentStep(0);
-          }
-          setCurrentStep(currentStep + 1);
-
-          return res.data;
-        })
-        .catch((err) => {
-          // setCurrentStep(currentStep - 1);
-          console.log(err);
-        });
-    },
-    {
-      enabled: run,
-      retry: false,
-      staleTime: 1000 * 10, // 10 seconds
-    }
-  );
-
   return (
     <div className="w-full max-w-xl mx-auto mt-8">
       {currentStep == 0 && (
@@ -135,11 +66,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       )}
       {currentStep >= 1 && (
         <StepComponent
+          id={0}
           label={"Create Resource Group"}
           validationSchema={ressourceGroupValidationSchema}
           initialValues={ressourceGroupInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 1}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="projectName" htmlfor="projectName" disabled={loading || currentStep > 1}>
             Project Name
@@ -154,11 +86,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       )}
       {currentStep >= 2 && (
         <StepComponent
+          id={1}
           label={"Create Storage Account"}
           validationSchema={storageAccountValidationSchema}
           initialValues={storageAccountInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 2}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="storageAccountName" htmlfor="projectName" disabled={loading || currentStep > 2}>
             Storage Account Name
@@ -170,11 +103,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       )}
       {currentStep >= 3 && (
         <StepComponent
+          id={2}
           label={"Create Virtual Network"}
           validationSchema={virtualNetworkValidationSchema}
           initialValues={virtualNetworkInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 3}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="virtualNetworkName" htmlfor="projectName" disabled={loading || currentStep > 3}>
             Virtual Network Name
@@ -183,11 +117,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       )}
       {currentStep >= 4 && (
         <StepComponent
+          id={3}
           label={"Create Public Ip Address"}
           validationSchema={publicIpAdressValidationSchema}
           initialValues={publicIpAdressInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 4}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="publicIpName" htmlfor="publicIpName" disabled={loading || currentStep > 4}>
             Public Ip Adress Name
@@ -196,11 +131,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       )}
       {currentStep >= 5 && (
         <StepComponent
+          id={4}
           label={"Create Network Interface"}
           validationSchema={networkInterfaceValidationSchema}
           initialValues={networkInterfaceInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 5}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="networkInterfaceName" htmlfor="networkInterfaceName" disabled={loading || currentStep > 5}>
             Network Interface Name
@@ -210,11 +146,12 @@ const CreateRessourceForm: FunctionComponent<CreateRessourceFormProps> = ({ curr
       {/* Repeat this pattern for the other steps */}
       {currentStep >= 6 && (
         <StepComponent
+          id={5}
           label={"Create Network Interface"}
           validationSchema={virtualMachineValidationSchema}
           initialValues={virtualMachineInitialValues}
-          handleFormSubmit={handleFormSubmit}
-          isLoading={loading && currentStep == 6}
+          formValues={formValues}
+          setFormValues={setFormValues}
         >
           <FormField name="virtualMachineName" htmlfor="virtualMachineName" disabled={loading || currentStep > 6}>
             Virtual Machine Name
