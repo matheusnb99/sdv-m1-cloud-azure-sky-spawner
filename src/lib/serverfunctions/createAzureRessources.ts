@@ -28,7 +28,7 @@ const getToken = () => {
 
 export const _createRessourceGroup = async (body: RequestBody) => {
   const { resourceGroupName, location, projectName } = body as DefaultProps & RessourceGroupProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const resourceClient = new ResourceManagementClient(getToken(), subscriptionId);
   const resourceGroup = await createRessourceGroup(resourceGroupName, location, projectName, resourceClient);
 
@@ -46,7 +46,7 @@ export const _createRessourceGroup = async (body: RequestBody) => {
 export const _createNetworkInterface = async (body: RequestBody) => {
   const { resourceGroupName, virtualNetworkName, publicIpName, location, networkInterfaceName } = body as DefaultProps &
     NetworkInterfaceProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const networkClient = new NetworkManagementClient(getToken(), subscriptionId);
   const virtualNetwork = await networkClient.virtualNetworks.get(resourceGroupName, virtualNetworkName);
   const publicIPAddress = await networkClient.publicIPAddresses.get(resourceGroupName, publicIpName);
@@ -75,7 +75,7 @@ export const _createNetworkInterface = async (body: RequestBody) => {
 
 export const _createPublicIpAddress = async (body: RequestBody) => {
   const { resourceGroupName, publicIpName, location } = body as DefaultProps & PublicIpProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const networkClient = new NetworkManagementClient(getToken(), subscriptionId);
   const publicIp = await createPublicIpAddress(networkClient, location, resourceGroupName, publicIpName);
 
@@ -92,7 +92,7 @@ export const _createPublicIpAddress = async (body: RequestBody) => {
 
 export const _getPublicIpAddress = async (body: RequestBody) => {
   const { resourceGroupName, publicIpName } = body as DefaultProps & PublicIpProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const networkClient = new NetworkManagementClient(getToken(), subscriptionId);
   const publicIPAddress = await networkClient.publicIPAddresses.get(resourceGroupName, publicIpName);
 
@@ -102,7 +102,7 @@ export const _getPublicIpAddress = async (body: RequestBody) => {
 export const _createStorageAccount = async (body: RequestBody) => {
   const { resourceGroupName, storageAccountName, accType, location, projectName } = body as DefaultProps &
     StorageAccountProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const storageClient = new StorageManagementClient(getToken(), subscriptionId);
   const accountInfo = await createStorageAccount(
     storageAccountName,
@@ -129,7 +129,7 @@ export const _createStorageAccount = async (body: RequestBody) => {
 export const _createVirtualMachine = async (body: RequestBody) => {
   const { resourceGroupName, virtualMachineName, networkInterfaceName, location, username, password, diskName } =
     body as DefaultProps & VirtualMachineProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const computeClient = new ComputeManagementClient(getToken(), subscriptionId);
   const networkClient = new NetworkManagementClient(getToken(), subscriptionId);
 
@@ -180,7 +180,7 @@ export const _createVirtualMachine = async (body: RequestBody) => {
 };
 
 export const _getVirtualMachine = async (resourceGroupName: string, virtualMachineName: string) => {
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const computeClient = new ComputeManagementClient(getToken(), subscriptionId);
   const virtualMachine = await computeClient.virtualMachines.get(resourceGroupName, virtualMachineName);
 
@@ -188,7 +188,7 @@ export const _getVirtualMachine = async (resourceGroupName: string, virtualMachi
 };
 export const _createVirtualNetwork = async (body: RequestBody) => {
   const { resourceGroupName, virtualNetworkName, location } = body as DefaultProps & VirtualNetworkProps;
-  const subscriptionId = getSubscriptionId();
+  const subscriptionId = await getSubscriptionId();
   const networkClient = new NetworkManagementClient(getToken(), subscriptionId);
   const virtualNetwork = await createVirtualNetwork(networkClient, location, resourceGroupName, virtualNetworkName);
 

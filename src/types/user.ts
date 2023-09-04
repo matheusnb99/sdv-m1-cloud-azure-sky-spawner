@@ -3,7 +3,7 @@ export type UserType = {
   username: string;
   password: string;
   credits: number;
-  access: "none" | "single" | "multiple";
+  access: AccessType;
 };
 
 export type UserContextType = {
@@ -11,3 +11,9 @@ export type UserContextType = {
   login: (arg0: string, arg1: string) => void;
   logout: () => void;
 };
+
+export enum AccessType {
+  NONE = "none",
+  SINGLE = "single",
+  MULTIPLE = "multiple",
+}

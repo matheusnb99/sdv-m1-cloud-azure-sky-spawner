@@ -6,7 +6,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
   const username = cookies().get("account_jwt_token")?.value;
 
   if (!username) {
-    return <>No username</>;
+    return <>Loading</>;
   }
 
   const user = User.getUser(username);

@@ -5,7 +5,7 @@ import Button from "@/core/Button";
 import FormField from "@/core/FormField";
 import { setCookie } from "@/lib/utils/setCookie";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import * as Yup from "yup";
 
 type handleFormSubmitType = {
@@ -28,13 +28,17 @@ const SignupSchema = Yup.object().shape({
 const SignIn = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [isTransitionStarted, startTransition] = useTransition();
 
-  const handleSubmit: (arg0: handleFormSubmitType) => void = ({ username, password }) => {
+  const handleSubmit: (arg0: handleFormSubmitType) => void = async ({ username, password }) => {
     setLoading(true);
-    setCookie({ name: "account", username: username, password: password });
 
-    console.log("where");
-    router.push("/app");
+    console.log({ username, password });
+
+    const res = await setCookie({ name: "account", username: username, password: password });
+
+    console.log(res);
+    startTransition(router.refresh);
   };
 
   return (

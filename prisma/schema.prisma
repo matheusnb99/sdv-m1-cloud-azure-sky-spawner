@@ -46,12 +46,13 @@ model StorageAccount {
 model VirtualMachine {
   id                 Int       @id @default(autoincrement())
   resourceGroupName  String
-  virtualMachineName String
+  virtualMachineName String    @unique
   networkInterfaceName String
   location           String
   username           String
   password           String
   diskName           String
+  createdAt          DateTime  @default(now())
 }
 
 model VirtualNetwork {

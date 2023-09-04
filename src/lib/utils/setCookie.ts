@@ -36,4 +36,5 @@ export async function setCookie(cookieArgs: CookieProps) {
 
     cookies().set("account_jwt_token", user.username);
   }
+  return true;
 }

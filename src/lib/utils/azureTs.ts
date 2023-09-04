@@ -1,3 +1,5 @@
+"use server";
+
 import { ComputeManagementClient, VirtualMachine } from "@azure/arm-compute";
 import { NetworkInterface, NetworkManagementClient, PublicIPAddress, VirtualNetwork } from "@azure/arm-network";
 import { ResourceManagementClient } from "@azure/arm-resources";
@@ -8,7 +10,7 @@ import { loadEnvConfig } from "@next/env";
 const dev = process.env.NODE_ENV !== "production";
 const { AZURE_SUBSCRIPTION_ID } = loadEnvConfig("./", dev).combinedEnv;
 
-export function createRessourceGroup(
+export async function createRessourceGroup(
   resourceGroupName: string,
   location: string,
   projectName: string,
@@ -47,7 +49,7 @@ export async function createStorageAccount(
   return storageClient.storageAccounts.beginCreateAndWait(resourceGroupName, storageAccountName, createParameters);
 }
 
-export function getSubscriptionId(): string {
+export async function getSubscriptionId() {
   const subscriptionId: string | undefined = AZURE_SUBSCRIPTION_ID;
 
   if (!subscriptionId) {
@@ -74,7 +76,7 @@ export async function getAzureClients(subscriptionId: string): Promise<{
 }
 
 export async function listVirtualMachines(computeClient: ComputeManagementClient) {
-  console.log(`Listing virtual machine in ${computeClient.subscriptionId} subscription`);
+  // console.log(`Listing virtual machine in ${computeClient.subscriptionId} subscription`);
   const virtualMachines = await computeClient.virtualMachines.listAll();
   const virtualMachinesArray = new Array();
   let index = 0;
@@ -221,24 +223,9 @@ export async function deleteResource(resourceGroupName: string, resourceName: st
   console.log(`Resource "${resourceName}" deleted successfully.`);
 }
 
-export function getNameSuffix(): string {
-  const now = new Date();
-  const pad = (n: number, num: number): string => {
-    const padString = "0".repeat(n);
-    return (padString + num).slice(-n);
-  };
-
-  const nameSuffix =
-    pad(2, now.getMonth()) +
-    pad(2, now.getDate()) +
-    pad(2, now.getHours()) +
-    pad(2, now.getMinutes()) +
-    pad(2, now.getSeconds());
-
-  return nameSuffix;
-}
-
 export async function listVMsStatus(computeClient: ComputeManagementClient) {
+  // console.log(`Listing virtual machine in ${computeClient.subscriptionId} subscription`);
+
   // Set params to only ask for status
   const virtualMachinesListAllOptionalParams = { statusOnly: "true" };
 
@@ -252,7 +239,7 @@ export async function listVMsStatus(computeClient: ComputeManagementClient) {
         time: status.time,
       };
     });
-    console.log(item);
+    // console.log(item);
 
     result.push({
       name: item.name,
