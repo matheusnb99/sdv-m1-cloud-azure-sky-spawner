@@ -3,8 +3,8 @@
 import { deleteResource } from "@/lib/utils/azureTs";
 import purgeDb from "@/lib/utils/db/purgeDb";
 import { generateTokenCallback } from "@/lib/utils/generateToken";
-import { prisma } from "@/lib/utils/prisma";
 import { ComputeManagementClient } from "@azure/arm-compute";
+import { revalidatePath } from "next/cache";
 
 export async function deleteVmClient(
   token: string,
@@ -17,20 +17,16 @@ export async function deleteVmClient(
   try {
     const computeClient = new ComputeManagementClient(generateTokenCallback(token), subscriptionId);
     // const resourceClient = new ResourceManagementClient(generateTokenCallback(token), subscriptionId);
-    await deleteResource(resourceGroupName, virtualMachineName, computeClient.virtualMachines);
+    const deleted = await deleteResource(resourceGroupName, virtualMachineName, computeClient.virtualMachines);
     // await deleteResource(resourceGroupName, resourceGroupName, resourceClient.resourceGroups);
 
     console.log(virtualMachineName.toString());
 
-    purgeDb(resourceGroupName.toString());
+    await purgeDb(resourceGroupName.toString());
 
-    await prisma.virtualMachine.delete({
-      where: {
-        virtualMachineName: virtualMachineName.toString(),
-      },
-    });
+    revalidatePath("/app");
 
-    return true;
+    return deleted;
   } catch (error) {
     console.error(error);
   }

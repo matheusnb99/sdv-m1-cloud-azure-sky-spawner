@@ -3,6 +3,7 @@
 import { startVM } from "@/lib/utils/azureTs";
 import { generateTokenCallback } from "@/lib/utils/generateToken";
 import { ComputeManagementClient } from "@azure/arm-compute";
+import { revalidatePath } from "next/cache";
 
 export async function startVmClient(
   token: string,
@@ -10,11 +11,11 @@ export async function startVmClient(
   resourceGroupName: string,
   virtualMachineName: string
 ) {
-  console.log("startVmClient");
-
   const computeClient = new ComputeManagementClient(generateTokenCallback(token), subscriptionId);
-  const temp = await startVM(computeClient, resourceGroupName, virtualMachineName).then((res) => {
-    res.pollUntilDone().then((res) => console.log(res));
-  });
-  return true;
+  const res = await startVM(computeClient, resourceGroupName, virtualMachineName);
+  const isDone = await res.pollUntilDone();
+
+  revalidatePath("/app");
+
+  return isDone;
 }

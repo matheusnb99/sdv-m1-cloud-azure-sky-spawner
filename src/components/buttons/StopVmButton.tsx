@@ -2,8 +2,7 @@
 
 import Button from "@/core/Button";
 import { stopVmClient } from "@/lib/utils/stopVmClient";
-import { useRouter } from "next/navigation";
-import { FunctionComponent, useState, useTransition } from "react";
+import { FunctionComponent, useState } from "react";
 
 interface StopVmButtonProps {
   subscriptionId: string;
@@ -19,21 +18,20 @@ const StopVmButton: FunctionComponent<StopVmButtonProps> = ({
   virtualMachineName,
 }) => {
   const [message, setMessage] = useState<string>("Stop");
-  const [isTransitionStarted, startTransition] = useTransition();
-  const router = useRouter();
 
   const onDelete = async () => {
-    setMessage("Stopping... reload after 10 seconds");
     stopVmClient(token, subscriptionId, resourceGroupName, virtualMachineName);
-
-    // await sleep(10000).then(() => {
-    //   startTransition(router.refresh);
-    // });
   };
 
   return (
     <form action={onDelete}>
-      <Button type="submit" customClassName="py-2 px-4 bg-blue-500 text-white rounded">
+      <Button
+        type="submit"
+        onClick={() => {
+          setMessage("Stopping");
+        }}
+        customClassName="py-2 px-4 bg-blue-500 text-white rounded"
+      >
         {message}
       </Button>
     </form>
