@@ -16,8 +16,12 @@ function getNameSuffix(): string {
 
   return nameSuffix;
 }
-
+const pad = (n: number, num: number): string => {
+  const padString = "0".repeat(n);
+  return (padString + num).slice(-n);
+};
 const nameSuffix = getNameSuffix();
+const SAME_SUFFIX = "azuresdvm1" + pad(2, new Date().getMonth());
 
 export const ressourceGroupValidationSchema = Yup.object().shape({
   projectName: Yup.string().required("Required"),
@@ -25,9 +29,9 @@ export const ressourceGroupValidationSchema = Yup.object().shape({
   resourceGroupName: Yup.string().required("Required"),
 });
 export const ressourceGroupInitialValues = {
-  projectName: "projectName" + nameSuffix,
+  projectName: "projectName" + SAME_SUFFIX,
   location: "eastus",
-  resourceGroupName: "ressourceGroup" + nameSuffix,
+  resourceGroupName: "ressourceGroup" + SAME_SUFFIX,
 };
 
 export const storageAccountValidationSchema = Yup.object().shape({
@@ -35,7 +39,7 @@ export const storageAccountValidationSchema = Yup.object().shape({
   accType: Yup.string().required("Required"),
 });
 export const storageAccountInitialValues = {
-  storageAccountName: "storage" + nameSuffix,
+  storageAccountName: "storage" + SAME_SUFFIX,
   accType: "Standard_LRS",
 };
 
@@ -43,7 +47,7 @@ export const virtualNetworkValidationSchema = Yup.object().shape({
   virtualNetworkName: Yup.string().required("Required"),
 });
 export const virtualNetworkInitialValues = {
-  virtualNetworkName: "network" + nameSuffix,
+  virtualNetworkName: "network" + SAME_SUFFIX,
 };
 
 export const publicIpAdressValidationSchema = Yup.object().shape({

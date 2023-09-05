@@ -22,7 +22,7 @@ export async function deleteVmClient(
 
     console.log(virtualMachineName.toString());
 
-    await purgeDb(resourceGroupName.toString());
+    await purgeDb(resourceGroupName.toString(), virtualMachineName.toString());
 
     revalidatePath("/app");
 

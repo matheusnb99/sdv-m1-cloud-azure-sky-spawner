@@ -1,39 +1,49 @@
 import { prisma } from "@/lib/utils/prisma";
 
-const purgeDb = async (resourceGroupName: string) => {
+const purgeDb = async (resourceGroupName: string, virtualMachineName: string) => {
   console.log("purgeDb");
   try {
-    await prisma.virtualMachine.deleteMany({
+    const vm = await prisma.virtualMachine.findFirst({
+      where: {
+        virtualMachineName: virtualMachineName,
+      },
+    });
+
+    if (vm) {
+      await prisma.virtualMachine.delete({
+        where: {
+          id: vm.id,
+        },
+      });
+    }
+    const ni = await prisma.networkInterface.findFirst({
       where: {
         resourceGroupName: resourceGroupName,
       },
     });
-    // ResourceGroup, NetworkInterface, PublicIPAddress, VirtualNetwork, StorageAccount, VirtualMachine
-    await prisma.resourceGroup.deleteMany({
+
+    if (ni) {
+      await prisma.networkInterface.delete({
+        where: {
+          id: ni.id,
+        },
+      });
+    }
+
+    const pip = await prisma.publicIpAddress.findFirst({
       where: {
         resourceGroupName: resourceGroupName,
       },
     });
-    await prisma.networkInterface.deleteMany({
-      where: {
-        resourceGroupName: resourceGroupName,
-      },
-    });
-    await prisma.publicIpAddress.deleteMany({
-      where: {
-        resourceGroupName: resourceGroupName,
-      },
-    });
-    await prisma.virtualNetwork.deleteMany({
-      where: {
-        resourceGroupName: resourceGroupName,
-      },
-    });
-    await prisma.storageAccount.deleteMany({
-      where: {
-        resourceGroupName: resourceGroupName,
-      },
-    });
+
+    if (pip) {
+      await prisma.publicIpAddress.delete({
+        where: {
+          id: pip.id,
+        },
+      });
+    }
+
     await prisma.$disconnect();
     return true;
   } catch (error) {
